@@ -7,7 +7,21 @@
 
 
 function retryOnce(fn) {
+    return function (...args) {
+        const callback = args.pop();
 
+        fn(...args, (err, data) => {
+            if (!err) {
+                callback(null, data);
+                return;
+            }
+
+            fn(...args, (err2, data2) => {
+                callback(err2, data2 || null);
+            });
+        });
+    };
 }
 
+module.exports = retryOnce;
 module.exports = retryOnce;
